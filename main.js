@@ -18,15 +18,16 @@ let init = async () => {
 
 }
 
-let createOffer = async (MemberId) => {
-    
-  createPeerConnection('offer-sdp', MemberId)
+let createOffer = async () => {
+    peerConnection = new RTCPeerConnection()
 
-  let offer = await peerConnection.createOffer()
-  await peerConnection.setLocalDescription(offer)
+    remoteStream = new MediaStream()
+    document.getElementById('user-2').srcObject = remoteStream
 
-  document.getElementById('offer-sdp').value = JSON.stringify(offer)
-  client.sendMessageToPeer({text:JSON.stringify({'type':'offer', 'offer':offer})}, MemberId)
+
+    let offer = await peerConnection.createOffer()
+    await peerConnection.setLocalDescription(offer)
+  
 }
 
 init()
