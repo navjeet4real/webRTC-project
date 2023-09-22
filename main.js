@@ -16,14 +16,33 @@ let init = async () => {
 
  document.getElementById('user-1').srcObject = localStream
 
+ createOffer()
 }
 
 let createOffer = async () => {
-    peerConnection = new RTCPeerConnection()
+    peerConnection = new RTCPeerConnection(servers)
 
     remoteStream = new MediaStream()
     document.getElementById('user-2').srcObject = remoteStream
 
+    localStream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, localStream)
+    });
+
+    peerConnection.ontrack = (event) => {
+        event.streams[0].getTracks().forEach((track) => {
+            remoteStream.addTrack(track)
+        })
+    }
+
+
+    peerConnection.onicecandidate = async ( event ) => {
+        if (event.candidate){
+            console.log("New ICE Candidate:", event.candidate)
+        }
+    }
+
+    
 
     let offer = await peerConnection.createOffer()
     await peerConnection.setLocalDescription(offer)
